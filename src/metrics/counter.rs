@@ -60,8 +60,9 @@ mod test {
 
         let mut c: StdCounter = StdCounter::new();
         c.inc();
+        c.inc();
 
-        assert!(c.value == 1.0);
+        assert!(c.value == 2.0);
     }
 
     #[test]

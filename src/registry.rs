@@ -71,6 +71,7 @@ mod test {
     use metrics::gauge::{Gauge, StdGauge};
     use registry::{Registry, StdRegistry};
     use histogram::*;
+    use metrics::metric::MetricValue;
 
 
     // TODO add labels tests
@@ -96,7 +97,24 @@ mod test {
         let mut r = StdRegistry::new();
         let mut c: StdCounter = StdCounter::new();
         c.add(1.0);
+        assert!(c.value == 1 as f64);
         r.insert("counter1", c);
+        c.inc();
+        match r.get("counter1").export_metric() {
+            MetricValue::Meter(_) => {
+                assert!(false);
+            }
+            MetricValue::Gauge(_) => {
+                assert!(false);
+            }
+            // It's a counter so we should error if it's not.
+            MetricValue::Counter(x) =>  {
+                assert!(x.value == 2 as f64);
+            }
+            MetricValue::Histogram(_) => { 
+                assert!(false);
+            }
+        }
     }
 
     #[test]
